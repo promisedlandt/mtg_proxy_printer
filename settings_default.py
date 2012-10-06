@@ -1,0 +1,1 @@
+import osROOT_PATH = os.path.dirname(os.path.abspath(__file__))IMAGES_FULL_PATH = ROOT_PATHDECKS_FULL_PATH = ROOT_PATHOUTPUT_PATH = ROOT_PATH
