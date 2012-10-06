@@ -19,7 +19,7 @@ def mtg_proxy_print(input_filename, settings):
     input_fullpath = os.path.join(settings.DECKS_FULL_PATH, input_filename)
     if not os.path.exists(input_fullpath):
         raise Exception, 'File with the name "%s" doesn\'t exist.' % input_fullpath
-    
+
     deck = read_deck(input_fullpath)
     download_missing_images(deck, settings.IMAGES_FULL_PATH)
     print_pdf(deck, input_filename, settings.OUTPUT_PATH, settings.IMAGES_FULL_PATH)
@@ -58,7 +58,7 @@ def download_image(card_name, images_full_path):
     content = search_for_card(card_name)
     if not content:
         return False
-    match = re.match('(.+)src="http://([a-z0-9\./]+)" alt="%s"(.+)' % (card_name), content.replace("\n", ""))
+    match = re.match('(.+)src="http://([a-z0-9\./]+)"\s+alt="%s"(.+)' % (card_name), content.replace("\n", ""))
     if match is None:
         print 'Image for %s not found.' % card_name
         return False
@@ -84,7 +84,7 @@ def print_pdf(deck, input_filename, output_path, images_full_path):
     #card size in mm
     CARD_WIDTH = 63
     CARD_HEIGHT = 88
-    
+
     padding_left = (A4[0] - 3*CARD_WIDTH*mm) / 2
     padding_bottom = (A4[1] - 3*CARD_HEIGHT*mm) / 2
 
@@ -121,9 +121,9 @@ def print_pdf(deck, input_filename, output_path, images_full_path):
         sys.exit(1)
 
     print '%s saved.' % output_filename
-    
+
     #sheet for pack quick overview
-    
+
     output_filename = '%s_overview.pdf' % input_filename[:-4]
     output_fullpath = os.path.join(output_path, output_filename)
     canvas = Canvas(output_fullpath, pagesize=A4)
@@ -131,13 +131,13 @@ def print_pdf(deck, input_filename, output_path, images_full_path):
 
     #making list unique but maintain the order
     cards = list(set(deck))
-    cards.sort(cmp=lambda x,y: cmp(deck.index(x), deck.index(y))) 
-    
+    cards.sort(cmp=lambda x,y: cmp(deck.index(x), deck.index(y)))
+
     multiplicator = int(math.ceil(math.sqrt(len(cards))))
-    
+
     CARD_WIDTH = 3.0 * CARD_WIDTH / multiplicator
     CARD_HEIGHT = 3.0 * CARD_HEIGHT / multiplicator
-    
+
     x, y = 0, multiplicator
     for card_name in cards:
         image = get_image_full_path(card_name, images_full_path)
@@ -146,19 +146,19 @@ def print_pdf(deck, input_filename, output_path, images_full_path):
             x = 0
         #x and y define the lower left corner of the image you wish to
         #draw (or of its bounding box, if using preserveAspectRation below).
-        canvas.drawImage(image, 
-                         x=x*CARD_WIDTH*mm, 
-                         y=y*CARD_HEIGHT*mm, 
-                         width=CARD_WIDTH*mm, 
+        canvas.drawImage(image,
+                         x=x*CARD_WIDTH*mm,
+                         y=y*CARD_HEIGHT*mm,
+                         width=CARD_WIDTH*mm,
                          height=CARD_HEIGHT*mm)
         canvas.setFillColorRGB(1,1,1)
-        canvas.rect(x=x*CARD_WIDTH*mm + CARD_WIDTH*mm/10, 
-                    y=y*CARD_HEIGHT*mm + CARD_HEIGHT*mm/1.5, 
-                    width=CARD_WIDTH*mm/4, 
-                    height=CARD_HEIGHT*mm/6, 
+        canvas.rect(x=x*CARD_WIDTH*mm + CARD_WIDTH*mm/10,
+                    y=y*CARD_HEIGHT*mm + CARD_HEIGHT*mm/1.5,
+                    width=CARD_WIDTH*mm/4,
+                    height=CARD_HEIGHT*mm/6,
                     stroke=1, fill=1)
         canvas.setFillColorRGB(0,0,0)
-        canvas.drawString(x=x*CARD_WIDTH*mm + CARD_WIDTH*mm/10 + CARD_WIDTH*mm/20, 
+        canvas.drawString(x=x*CARD_WIDTH*mm + CARD_WIDTH*mm/10 + CARD_WIDTH*mm/20,
                           y=y*CARD_HEIGHT*mm + CARD_HEIGHT*mm/1.5 + CARD_HEIGHT*mm/20,
                           text="%dx" % deck.count(card_name))
         x += 1
